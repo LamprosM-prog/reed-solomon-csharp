@@ -26,7 +26,6 @@ namespace ReedSolomon
             }
         }
         public static byte Add(byte a, byte b) => (byte)(a ^ b);
-
         public static byte Multiply(byte a, byte b)
         {
             if (a == 0 || b == 0) return 0;

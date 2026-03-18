@@ -1,10 +1,11 @@
-﻿namespace ReedSolomon.Tests;
+﻿using System;
+using Xunit;
+using ReedSolomon;
 
-public class UnitTest1
+namespace ReedSolomon.Tests
 {
-    [Fact]
-    public void Test1()
+    public class GF256Debug
     {
-
+        
     }
 }
