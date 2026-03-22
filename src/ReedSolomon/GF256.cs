@@ -13,7 +13,7 @@ namespace ReedSolomon
             {
                 exp[i] = (byte)value;
                 log[value] = (byte)i;
-                value = value << 1;
+                value <<= 1;
                 if (value >= 256)
                 {
                     value ^= 0x11D;
