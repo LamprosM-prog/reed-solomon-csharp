@@ -73,7 +73,7 @@ namespace ReedSolomon
                     a[i] = GF256.Add(a[i], bScaled);
                 }
                 a = Trim(a);
-            }
+           }
             return a;
         }
     }

@@ -13,12 +13,12 @@ namespace ReedSolomon.Tests
 
             var result = Polynomial.Add(a, b);
 
-            Assert.Equal(new byte[]
-            {
+            Assert.Equal(
+            [
                 (byte)(1 ^ 4),
                 (byte)(2 ^ 5),
                 (byte)(3 ^ 6)
-            }, result);
+            ], result);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace ReedSolomon.Tests
 
             var result = Polynomial.Add(a, b);
 
-            Assert.Equal(new byte[] {(byte)(1 ^ 1)}, result);
+            Assert.Equal([(byte)(1 ^ 1)], result);
         }
 
         [Fact]

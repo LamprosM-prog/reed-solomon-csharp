@@ -44,6 +44,6 @@ namespace ReedSolomon
             if (a == 0) throw new ArithmeticException("No inverse for zero.");
             return exp[255 - log[a]];
         }
-
+        public static byte Helper(int i) => exp[i];
     }
 }
