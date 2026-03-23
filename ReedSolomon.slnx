@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/ReedSolomon/ReedSolomon.csproj" />
+    <Project Path="src/ReedSolomonConsole/ReedSolomonConsole.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ReedSolomon.Tests/ReedSolomon.Tests.csproj" />
