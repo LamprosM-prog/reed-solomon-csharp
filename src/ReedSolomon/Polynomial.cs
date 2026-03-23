@@ -5,6 +5,12 @@ namespace ReedSolomon
 {
     public static class Polynomial
     {
+        private static int Degree(byte[] poly)
+        {
+            Trim(poly);
+            int degree = poly.Length - 1;
+            return degree;
+        }
         private static byte[] Trim(byte[] poly)
         {
             int i = 0;
@@ -53,6 +59,22 @@ namespace ReedSolomon
             }
             return Trim(result);
         }
-
+        // a is the dividend  and b is the devisor (a/b)
+        public static byte[] Divide(byte[] a, byte[] b) 
+        {
+            a = Trim(a);
+            b = Trim(b);
+           while(Degree(b)<=Degree(a))
+           {
+                byte factor = GF256.Multiply(a[0], GF256.Inverse(b[0]));
+                for (int i = 0; i < b.Length; i++)
+                {
+                    byte bScaled = GF256.Multiply(b[i], factor);
+                    a[i] = GF256.Add(a[i], bScaled);
+                }
+                a = Trim(a);
+            }
+            return a;
+        }
     }
 }
