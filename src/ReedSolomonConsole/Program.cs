@@ -1,5 +1,5 @@
 ﻿using System;
-//using ReedSolomon;
+using ReedSolomon;
 
 namespace ReedSolomonConsole
 {
@@ -7,7 +7,10 @@ namespace ReedSolomonConsole
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("This is a test");
+            int t = 4;
+            byte[] messageTest = [1, 2, 3, 4];
+            byte[] codeWordTest = Encoder.Encode(messageTest, 4);           
+            Console.WriteLine(string.Join($" ", codeWordTest));
             Console.ReadKey();
         }
     }
