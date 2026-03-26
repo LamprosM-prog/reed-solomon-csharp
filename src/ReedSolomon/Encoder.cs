@@ -15,10 +15,12 @@ namespace ReedSolomon
                 messageShifted[i] = message[i];
             }
             byte[] inductivePolynomial = Generator.Build(eccLength);
-            Console.WriteLine(string.Join(" ", inductivePolynomial)); //remove all console.writeline later
+            Console.WriteLine($"Inductive: {string.Join(" ", inductivePolynomial)}  // Polynomial form : " +
+                $"{PolynomialPrinter.PrintPolynomial(inductivePolynomial)}"); 
             byte[] msgShiftedCopy = messageShifted.ToArray();
             byte[] remainder = Polynomial.Divide(msgShiftedCopy, inductivePolynomial);
-            Console.WriteLine(string.Join(" ", remainder));
+            Console.WriteLine($"Remainder: {string.Join(" ", remainder)} // Polynomial form: " +
+                $"{PolynomialPrinter.PrintPolynomial(remainder)}");
             byte[] codeWord = new byte[messageShifted.Length];
             for (int i = 0; i < message.Length; i++)
             {
@@ -26,7 +28,7 @@ namespace ReedSolomon
             }
             for (int i = 0; i < remainder.Length; i++)
             {
-                codeWord[i+remainder.Length] = remainder[i];
+                codeWord[i+message.Length] = remainder[i];
             }
             return codeWord;
         }
