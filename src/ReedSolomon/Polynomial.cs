@@ -5,7 +5,7 @@ namespace ReedSolomon
 {
     public static class Polynomial
     {
-        private static int Degree(byte[] poly)
+        public static int Degree(byte[] poly)
         {
             Trim(poly);
             int degree = poly.Length - 1;
@@ -66,7 +66,7 @@ namespace ReedSolomon
             b = Trim(b);
            while(Degree(b)<=Degree(a))
            {
-                byte factor = GF256.Multiply(a[0], GF256.Inverse(b[0])); //black satanic magic
+                byte factor = GF256.Multiply(a[0], GF256.Inverse(b[0])); //satanic black magic
                 for (int i = 0; i < b.Length; i++)
                 {
                     byte bScaled = GF256.Multiply(b[i], factor);
