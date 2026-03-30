@@ -7,17 +7,20 @@ namespace ReedSolomon
     {
         public static int Degree(byte[] poly)
         {
-            Trim(poly);
-            int degree = poly.Length - 1;
-            return degree;
+            for (int i = poly.Length - 1; i >= 0; i--)
+            {
+                if (poly[i] != 0)
+                    return i;
+            }
+
+            return -1; 
         }
         private static byte[] Trim(byte[] poly)
         {
-            int i = 0;
-            while (i < poly.Length - 1 && poly[i] == 0)
-                i++;
-
-            return poly.Skip(i).ToArray();
+            int i = poly.Length - 1;
+            while (i > 0 && poly[i] == 0)
+                i--;
+            return poly.Take(i + 1).ToArray();
         }
         public static byte[] Add(byte[] a, byte[] b)
         {
@@ -60,20 +63,27 @@ namespace ReedSolomon
             return Trim(result);
         }
         // a is the dividend  and b is the devisor (a/b)
-        public static byte[] Divide(byte[] a, byte[] b) 
+        public static byte[] Divide(byte[] a, byte[] b)
         {
             a = Trim(a);
             b = Trim(b);
-           while(Degree(b)<=Degree(a))
-           {
-                byte factor = GF256.Multiply(a[0], GF256.Inverse(b[0])); //satanic black magic
-                for (int i = 0; i < b.Length; i++)
+
+            while (Degree(b) <= Degree(a))
+            {
+                int degA = Degree(a);
+                int degB = Degree(b);
+                byte factor = GF256.Multiply(a[degA], GF256.Inverse(b[degB]));
+                int shift = degA - degB;
+
+                for (int i = 0; i <= degB; i++)
                 {
                     byte bScaled = GF256.Multiply(b[i], factor);
-                    a[i] = GF256.Add(a[i], bScaled);
+                    a[i + shift] = GF256.Add(a[i + shift], bScaled);
                 }
+
                 a = Trim(a);
-           }
+            }
+
             return a;
         }
     }

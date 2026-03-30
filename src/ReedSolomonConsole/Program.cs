@@ -17,7 +17,7 @@ namespace ReedSolomonConsole
             Console.WriteLine($"The codeword is : {string.Join($" ", codeWordTest)}");
             byte[] codeWordCorrupted = Noise(codeWordTest);
             Console.WriteLine($"Noise corrupted codeword: {string.Join(" ", codeWordCorrupted)}");
-            byte[] syndromes = Decoder.ComputeSyndromes(codeWordTest, t);
+            byte[] syndromes = Decoder.ComputeSyndromes(codeWordCorrupted, t);
             bool AreThereErrors = Decoder.CheckForErrors(syndromes);
             if (AreThereErrors == false) {
                 Console.WriteLine("No errors detected");            
@@ -25,7 +25,7 @@ namespace ReedSolomonConsole
             else
             {
                 Console.WriteLine($"Syndromes : {string.Join(" ", syndromes)}");
-                Decoder.BerlekampMassey(syndromes);
+                Decoder.ChienSearch(Decoder.BerlekampMassey(syndromes),codeWordCorrupted.Length);
             }
             stopwatch.Stop();
             TimeSpan ts = stopwatch.Elapsed;

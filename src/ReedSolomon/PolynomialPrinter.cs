@@ -43,7 +43,6 @@ namespace ReedSolomon
             }
             else
             {
-               
                 degree = poly.Length - 1;
                 for (int i = 0; i < poly.Length; i++)
                 {
