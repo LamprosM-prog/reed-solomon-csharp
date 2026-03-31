@@ -38,16 +38,19 @@ namespace ReedSolomon
         //lowest  index = constant
         public static byte[] BerlekampMassey(byte[] syndromes) 
         {
+            
             byte[] lambda = new byte[syndromes.Length + 1];
             byte[] bestL = new byte[lambda.Length];
             lambda[0] = 1;
             bestL[0] = 1;
+            byte b = 1;
             int degree = 0;
             int m = -1;
             int k = 0;
             while (k < syndromes.Length)
             {
                 byte delta = syndromes[k];
+               
                 for (int i = 1; i <= degree; i++)
                 {
                     delta = GF256.Add(delta,
@@ -58,12 +61,15 @@ namespace ReedSolomon
                     byte[] temp = (byte[])lambda.Clone();
                     int shift = k - m;
                     // λ(x) = λ(x) - δ * x^(k - m) * B(x)
-                    for(int i = 0; i < bestL.Length; i++)
+                    for(int j = 0; j < bestL.Length; j++)
                     {
-                        int j = i - shift;
-                        if(j >= 0 && j < bestL.Length)
+                     
+                        int target = j + shift;
+                       
+                        if (target < lambda.Length)
                         {
-                            lambda[i] = GF256.Add(lambda[i], GF256.Multiply(delta, bestL[j]));
+                            lambda[target] = GF256.Add(lambda[target],
+                        GF256.Multiply(GF256.Divide(delta, b), bestL[j]));
                         } 
                        
                     }
@@ -71,11 +77,14 @@ namespace ReedSolomon
                     {
                         degree = k + 1 - degree;
                         bestL = temp;
+                        b = delta;
                         m = k;
+                        
                     }
                 }
 
                 k++;
+                
             }
             /*
              IMPORANT: To generate the polynomial λ(χ) we made it so 
@@ -98,11 +107,26 @@ namespace ReedSolomon
             List<int> errorPositions = new List<int>();
             for (int i = 0; i < 255; i++)
             {
-                byte x = GF256.Helper(255 - i);
+                byte x = GF256.Helper(i);
                 byte eval = Evaluate(lambda, x);
                 if (eval == 0)
                 {
-                    Console.WriteLine($"Root found at i={i}, maps to position ???");
+                    int locatorExp = 255 - i;
+                    int position = (codewordLength - 1) - locatorExp;
+                    if (position >= 0 && position < codewordLength)
+                        errorPositions.Add(position);
+                    /*
+                     Memonatory Note! This 4 lines took me 9 hours to write!
+                    This is because this part of the code uncovered 6 bugs:
+                   1) b = delta missing in BM — the one that finally broke everything open
+                   2) BM shift direction — j = i - shift vs j + shift
+                   3) Lambda not trimmed before reversing — leading zero corrupting Chien
+                   4) Chien position mapping — wrong formula for root-to-index conversion
+                   5) Reference bug in Main — codeWordCorrupted = codeWordTest sharing same array 
+                   6) Degree function — result of Trim being discarded
+
+
+                     */
                 }
             }
             Console.WriteLine($"Error positions:  {string.Join(" ", errorPositions)} ");
