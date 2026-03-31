@@ -8,12 +8,13 @@ namespace ReedSolomon
     {
         private static byte Evaluate(byte[] lambda, byte x) //Horner's scheme
         {
-            byte result = 0;
-            for (int i = lambda.Length - 1; i >= 0; i--) 
+            byte result = lambda[lambda.Length-1];
+            for (int i = lambda.Length - 2; i >= 0; i--) 
             {
-                result = GF256.Multiply(lambda[i], x);
-                result = GF256.Add(result, x);   
+                result = GF256.Multiply(result, x);
+                result = GF256.Add(result, lambda[i]);   
             }
+           
             return result;
         }
         
@@ -29,13 +30,20 @@ namespace ReedSolomon
                 {
                     result = GF256.Add(GF256.Multiply(result, x), coeff);
                 }
+
                 syndromes[i] = result;
             }
             return syndromes;
         }
         public static bool CheckForErrors(byte[] syndromes) => !syndromes.All(x => x == 0);
-        
+
         //lowest  index = constant
+        /*
+        If the codeword [1,2,3,4,1,2,3,4] (4d/4ecc) gets corrupted to 
+        [1, 2, 144, 4, 1, 41, 3, 4] it will produce the syndomes [25, 137, 56, 62].
+        This makes the Berlekamp-Massey Algorithm produce a 3rd degree Λ(χ) [1, 204, 0, 244, 0] despite of only 2 errors occuring,
+        which breaks the algorithm. This happens because of how arithmetics work on GF(256) and is an exception.
+         */
         public static byte[] BerlekampMassey(byte[] syndromes) 
         {
             byte[] lambda = new byte[syndromes.Length + 1];
@@ -59,8 +67,9 @@ namespace ReedSolomon
                     // λ(x) = λ(x) - δ * x^(k - m) * B(x)
                     for(int i = 0; i < bestL.Length; i++)
                     {
-                        int j = i - shift;
-                        if(j >= 0 && j < bestL.Length)
+                        int j = i + shift;
+                        Console.WriteLine($"  j={j} i={i} bestL[j]={bestL[j]} delta={delta} product={GF256.Multiply(delta, bestL[j])} lambda.Length={lambda.Length}");
+                        if (j >= 0 && j < bestL.Length)
                         {
                             lambda[i] = GF256.Add(lambda[i], GF256.Multiply(delta, bestL[j]));
                         } 
@@ -76,38 +85,37 @@ namespace ReedSolomon
 
                 k++;
             }
-
-
             Console.WriteLine($"Lambda : {string.Join(" ",lambda)} // Lambda Polynomial Form {PolynomialPrinter.PrintPolynomial(lambda, true)}");
             return lambda; 
         }
-        public static List<int> ChienSearch(byte[] lambda, int n)
+        public static List<int> ChienSearch(byte[] lambda, int codewordLength)
         {
             List<int> errorPositions = new List<int>();
-
-            for (int i = 0; i < n; i++)
+           
+            for (int i = 0; i < 255; i++) // loop all non-zero field elements
             {
-                // x = α^(-i) = α^(255 - i)
-                byte x = GF256.Helper((255 - i) % 255);
-                byte y = Evaluate(lambda, x);
+                byte x = GF256.Helper(i);       // α^i
+               byte xInv = GF256.Inverse(x);
+                byte y = Evaluate(lambda, xInv); // Λ(α^-i)
+         
                 if (y == 0)
                 {
-                    int index = n - 1 - i;
-                    errorPositions.Add(index);
+                    Console.WriteLine($"Found root at : {i}");
+                    int index = (codewordLength - 1) - i; // map field element to codeword index
+                    Console.WriteLine($"{index}");
+                    if (index >= 0 && index < codewordLength)
+                        errorPositions.Add(index);
                 }
-               
             }
+
             Console.WriteLine($"Degree of Λ(χ): {Polynomial.Degree(lambda)}");
-            if(Polynomial.Degree(lambda) == errorPositions.Count)
-            {
-                Console.WriteLine($"Degree of Λ(χ) is equal to the errors. Test successful");
-            }
+            if (Polynomial.Degree(lambda) == errorPositions.Count)
+                Console.WriteLine("Degree of Λ(χ) matches number of errors. Test successful");
             else
-            {
-                Console.WriteLine("Error in chien search");
-            }
-            Console.WriteLine($"Number of errors {errorPositions.Count}");
-            Console.WriteLine($"Positions : {string.Join(" ", errorPositions)} ");
+                Console.WriteLine("Warning: degree != number of roots found");
+
+            Console.WriteLine($"Number of errors: {errorPositions.Count}");
+            Console.WriteLine($"Positions: {string.Join(" ", errorPositions)}");
             return errorPositions;
         }
 

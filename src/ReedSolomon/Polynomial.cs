@@ -63,27 +63,20 @@ namespace ReedSolomon
             return Trim(result);
         }
         // a is the dividend  and b is the devisor (a/b)
-        public static byte[] Divide(byte[] a, byte[] b)
+        public static byte[] Divide(byte[] a, byte[] b) 
         {
             a = Trim(a);
             b = Trim(b);
-
-            while (Degree(b) <= Degree(a))
-            {
-                int degA = Degree(a);
-                int degB = Degree(b);
-                byte factor = GF256.Multiply(a[degA], GF256.Inverse(b[degB]));
-                int shift = degA - degB;
-
-                for (int i = 0; i <= degB; i++)
+           while(Degree(b)<=Degree(a))
+           {
+                byte factor = GF256.Multiply(a[Degree(a)], GF256.Inverse(b[Degree(b)])); //satanic black magic
+                for (int i = 0; i < b.Length; i++)
                 {
                     byte bScaled = GF256.Multiply(b[i], factor);
-                    a[i + shift] = GF256.Add(a[i + shift], bScaled);
+                    a[i] = GF256.Add(a[i], bScaled);
                 }
-
                 a = Trim(a);
-            }
-
+           }
             return a;
         }
     }
