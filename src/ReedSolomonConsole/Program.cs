@@ -10,12 +10,13 @@ namespace ReedSolomonConsole
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            int t = 4;
+            int t = 2;
             byte[] messageTest = [1, 2, 3, 4];
             Console.WriteLine($"Message:{string.Join(" ", messageTest)}");
             byte[] codeWordTest = Encoder.Encode(messageTest, t);
             Console.WriteLine($"The codeword is : {string.Join($" ", codeWordTest)}");
-            byte[] codeWordCorrupted = Noise(codeWordTest);
+            byte[] codeWordCorrupted = codeWordTest;
+            codeWordTest[2] = 40;
             Console.WriteLine($"Noise corrupted codeword: {string.Join(" ", codeWordCorrupted)}");
             byte[] syndromes = Decoder.ComputeSyndromes(codeWordTest, t);
             bool AreThereErrors = Decoder.CheckForErrors(syndromes);
@@ -25,7 +26,8 @@ namespace ReedSolomonConsole
             else
             {
                 Console.WriteLine($"Syndromes : {string.Join(" ", syndromes)}");
-                Decoder.BerlekampMassey(syndromes);
+                byte[] lambda = Decoder.BerlekampMassey(syndromes);
+                Decoder.ChienSearch(lambda, codeWordCorrupted.Length);
             }
             stopwatch.Stop();
             TimeSpan ts = stopwatch.Elapsed;

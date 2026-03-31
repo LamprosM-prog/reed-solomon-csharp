@@ -6,6 +6,18 @@ namespace ReedSolomon
 {
     public static class Decoder
     {
+        public static byte Evaluate(byte[] poly, byte x) //Horton scheme
+        {
+            byte result = 0;
+            for(int i = 0; i < poly.Length; i++)
+            {
+                result = GF256.Multiply(result, x);
+                result = GF256.Add(result, poly[i]);
+
+            }
+            return result;
+        }
+        
         public static byte[] ComputeSyndromes(byte[] codeword, int eccLength)
         {
             byte[] syndromes = new byte[eccLength];
@@ -65,10 +77,37 @@ namespace ReedSolomon
 
                 k++;
             }
-
-
-            Console.WriteLine($"Lambda : {string.Join(" ",lambda)} // Lambda Polynomial Form {PolynomialPrinter.PrintPolynomial(lambda, true)}");
+            /*
+             IMPORANT: To generate the polynomial λ(χ) we made it so 
+            that the lowest index is the constant.But the polynomial operations
+            and further functions treat polynomials as highest index = constant.
+            This requires to reverse lambda before  returning it.
+             */
+            Array.Reverse(lambda);
+            Console.WriteLine($"Lambda : {string.Join(" ",lambda)} // Lambda Polynomial Form {PolynomialPrinter.PrintPolynomial(lambda)}");
             return lambda; 
         }
+        public static List<int> ChienSearch(byte[] lambda, int codewordLength)
+        {
+           lambda = Polynomial.Trim(lambda);
+            Console.WriteLine(string.Join(" ",lambda));
+            List<int> errorPositions = new List<int>();
+            for(int i = 0; i<codewordLength; i++)
+            {
+                byte x = GF256.Helper(255 - i);
+                byte eval = Evaluate(lambda, x);
+                Console.WriteLine(eval);
+                if (eval == 0) { 
+                    errorPositions.Add(i);
+                }
+            }
+            Console.WriteLine($"Error positions:  {string.Join(" ", errorPositions)} ");
+            return errorPositions;
+        }
+    
     }
+    
+
+
+
 }

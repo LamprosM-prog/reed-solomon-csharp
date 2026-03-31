@@ -13,7 +13,15 @@ namespace ReedSolomon.Tests
         {
             _output = output;
         }
-
+        [Fact]
+        public void AdditionTest()
+        {
+            byte a = 1;
+            byte b = 1;
+            byte expected = (byte)(a ^ b);
+            byte result = GF256.Add(a, b);
+            Assert.Equal(expected, result);
+        }
         [Fact]
         public void PrintMultiplicationTable()
         {

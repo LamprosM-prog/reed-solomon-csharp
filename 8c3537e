@@ -1,0 +1,14 @@
+[33m624388d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Commit before i do stupid shit
+[33me310de1[m All arrays are now from constant to highest degree
+[33m8c3537e[m Add BerlekampMassey and Fix Printer
+[33mbf0c6c8[m Add polynomial forms and noise simulation
+[33md2465c7[m Add Encoder
+[33me4fa6a0[m Add the Console Skeleton
+[33m2d316f5[m Add Generator
+[33m0bbbee9[m Add Division function and tests
+[33me5318af[m Add Polynomial Addition and Multiplication and Tests
+[33me3a5ab0[m Add polynomial skeleton
+[33m20e7251[m Tests
+[33m666c689[m Build GF256
+[33me95651f[m Add GF256 skeleton
+[33md3ae848[m Initial project structure with .NET 10 class library and test project

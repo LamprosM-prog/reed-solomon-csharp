@@ -7,11 +7,10 @@ namespace ReedSolomon
     {
         public static int Degree(byte[] poly)
         {
-            Trim(poly);
-            int degree = poly.Length - 1;
-            return degree;
+            poly = Trim(poly);
+            return poly.Length - 1;
         }
-        private static byte[] Trim(byte[] poly)
+        public  static byte[] Trim(byte[] poly)
         {
             int i = 0;
             while (i < poly.Length - 1 && poly[i] == 0)
