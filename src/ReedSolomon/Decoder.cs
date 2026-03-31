@@ -83,6 +83,10 @@ namespace ReedSolomon
             and further functions treat polynomials as highest index = constant.
             This requires to reverse lambda before  returning it.
              */
+            int lastNonZero = lambda.Length - 1;
+            while (lastNonZero > 0 && lambda[lastNonZero] == 0)
+                lastNonZero--;
+            lambda = lambda.Take(lastNonZero + 1).ToArray();
             Array.Reverse(lambda);
             Console.WriteLine($"Lambda : {string.Join(" ",lambda)} // Lambda Polynomial Form {PolynomialPrinter.PrintPolynomial(lambda)}");
             return lambda; 
@@ -92,13 +96,13 @@ namespace ReedSolomon
            lambda = Polynomial.Trim(lambda);
             Console.WriteLine(string.Join(" ",lambda));
             List<int> errorPositions = new List<int>();
-            for(int i = 0; i<codewordLength; i++)
+            for (int i = 0; i < 255; i++)
             {
                 byte x = GF256.Helper(255 - i);
                 byte eval = Evaluate(lambda, x);
-                Console.WriteLine(eval);
-                if (eval == 0) { 
-                    errorPositions.Add(i);
+                if (eval == 0)
+                {
+                    Console.WriteLine($"Root found at i={i}, maps to position ???");
                 }
             }
             Console.WriteLine($"Error positions:  {string.Join(" ", errorPositions)} ");
