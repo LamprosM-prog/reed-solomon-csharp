@@ -7,7 +7,7 @@ namespace ReedSolomon
 {
     public static  class Encoder
     {
-        public static byte[] Encode(byte[] message, int eccLength)
+        public static byte[] Encode(byte[] message, int eccLength) // Reed Solomon!
         {
             byte[] messageShifted = new byte[message.Length + eccLength];
             for (int i = 0; i < (messageShifted.Length - eccLength); i++)

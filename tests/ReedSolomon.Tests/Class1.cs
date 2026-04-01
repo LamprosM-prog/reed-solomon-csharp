@@ -24,7 +24,7 @@ namespace ReedSolomon.Tests
                 for (int i = 0; i < 255; i++)
                 {
                     byte x = GF256.Helper(255 - i);
-                    byte eval = Decoder.Evaluate(lambda, x);
+                    byte eval = Polynomial.Evaluate(lambda, x);
                     if (eval == 0)
                         Console.WriteLine($"errorPos={errorPos} → root at i={i}");
                 }

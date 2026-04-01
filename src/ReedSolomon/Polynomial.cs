@@ -76,5 +76,36 @@ namespace ReedSolomon
             }
             return a;
         }
+        public static byte Evaluate(byte[] poly, byte x) //Horton scheme
+        {
+            byte result = 0;
+            for (int i = 0; i < poly.Length; i++)
+            {
+                result = GF256.Multiply(result, x);
+                result = GF256.Add(result, poly[i]);
+
+            }
+            return result;
+        }
+
+
+        public static byte[] Derivative(byte[] poly)
+        {
+            if(poly.Length <= 1)
+         return new byte[] { 0 };
+
+            byte[] result = new byte[poly.Length - 1];
+            int degree = poly.Length - 1;
+
+            for (int i = 0; i < poly.Length - 1; i++)
+            {
+                int power = degree - i;
+                if (power % 2 == 1)
+                    result[i] = poly[i]; 
+            }
+
+            return Trim(result);
+        }
+
     }
 }

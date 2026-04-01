@@ -6,18 +6,7 @@ namespace ReedSolomon
 {
     public static class Decoder
     {
-        public static byte Evaluate(byte[] poly, byte x) //Horton scheme
-        {
-            byte result = 0;
-            for(int i = 0; i < poly.Length; i++)
-            {
-                result = GF256.Multiply(result, x);
-                result = GF256.Add(result, poly[i]);
-
-            }
-            return result;
-        }
-        
+   
         public static byte[] ComputeSyndromes(byte[] codeword, int eccLength)
         {
             byte[] syndromes = new byte[eccLength];
@@ -108,7 +97,7 @@ namespace ReedSolomon
             for (int i = 0; i < 255; i++)
             {
                 byte x = GF256.Helper(i);
-                byte eval = Evaluate(lambda, x);
+                byte eval = Polynomial.Evaluate(lambda, x);
                 if (eval == 0)
                 {
                     int locatorExp = 255 - i;
@@ -118,24 +107,27 @@ namespace ReedSolomon
                     /*
                      Memonatory Note! This 4 lines took me 9 hours to write!
                     This is because this part of the code uncovered 6 bugs:
-                   1) b = delta missing in BM — the one that finally broke everything open
+                   1) b = delta missing in BM 
                    2) BM shift direction — j = i - shift vs j + shift
                    3) Lambda not trimmed before reversing — leading zero corrupting Chien
                    4) Chien position mapping — wrong formula for root-to-index conversion
                    5) Reference bug in Main — codeWordCorrupted = codeWordTest sharing same array 
                    6) Degree function — result of Trim being discarded
-
-
                      */
                 }
             }
             Console.WriteLine($"Error positions:  {string.Join(" ", errorPositions)} ");
             return errorPositions;
         }
-    
+        public static byte[] ForneySearch(byte[] lambda, List<int> errorPositions , byte[] codeword)
+        {
+                    
+            
+            
+            
+            
+            return [];
+        }
     }
     
-
-
-
 }

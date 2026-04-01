@@ -19,7 +19,7 @@ namespace ReedSolomon.Tests
         public void Evaluate_AtZero_ReturnsConstant()
         {
             byte[] poly = new byte[] { 139, 1 }; // 1 + 139x
-            byte result = Decoder.Evaluate(poly, 0);
+            byte result = Polynomial.Evaluate(poly, 0);
             Assert.Equal((byte)1, result);
         }
         [Fact]
@@ -28,7 +28,7 @@ namespace ReedSolomon.Tests
             byte[] poly = [139, 1];
 
             byte expected = GF256.Add(139,1);
-            byte result = Decoder.Evaluate(poly, (byte)1);
+            byte result = Polynomial.Evaluate(poly, (byte)1);
 
             Assert.Equal((byte)expected, (byte)result);
         }
@@ -41,7 +41,7 @@ namespace ReedSolomon.Tests
             // manual computation: ((136*α^3) + 42)*α^3 + 1
             byte manual = GF256.Add(GF256.Multiply(GF256.Multiply(136, x), x), GF256.Add(GF256.Multiply(42, x), 1));
 
-            byte horner = Decoder.Evaluate(poly, x);
+            byte horner = Polynomial.Evaluate(poly, x);
 
             Assert.Equal(manual, horner);
         }
