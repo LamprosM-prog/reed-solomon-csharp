@@ -22,7 +22,7 @@ namespace ReedSolomonConsole
             {
                 Console.WriteLine("Enter how many errors would you like? " +
                     "\nThe theoretical limit is 127, but for complexity reasons the hard limit is 64 " +
-                    "\n(Note: For errors higher than 16 expect high latency,\nit is also recommended that an even ammount of errors is selected )");
+                    "\n(Note: For errors higher than 16 expect high latency)");
 
                 string? input = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(input) || !int.TryParse(input, out numberOfErrors))

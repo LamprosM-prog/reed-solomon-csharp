@@ -92,7 +92,6 @@ namespace ReedSolomon
         public static List<int> ChienSearch(byte[] lambda, int codewordLength)
         {
            lambda = Polynomial.Trim(lambda);
-            Console.WriteLine(string.Join(" ",lambda));
             List<int> errorPositions = new List<int>();
             for (int i = 0; i <= 255; i++)
             {
