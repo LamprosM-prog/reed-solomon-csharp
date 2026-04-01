@@ -119,14 +119,29 @@ namespace ReedSolomon
             Console.WriteLine($"Error positions:  {string.Join(" ", errorPositions)} ");
             return errorPositions;
         }
-        public static byte[] ForneySearch(byte[] lambda, List<int> errorPositions , byte[] codeword)
+        public static byte[] Forney(byte[] lambda, byte[] codeword, byte[] syndromes, List<int> errorPositions) //Error correction will be handled here too
         {
-                    
-            
-            
-            
-            
-            return [];
+            byte[] syndromePoly =  syndromes.Reverse().ToArray();
+            byte[] omega = Polynomial.Multiply(syndromePoly, lambda);
+            byte[] lambdaDerivative = Polynomial.Derivative(lambda); //Λ'(x) 
+            int twoT = syndromes.Length;
+            if(omega.Length > twoT)
+                omega = omega[^twoT..];
+      
+            foreach(int errorPosition in errorPositions)
+            {
+                
+                int locatorExp = (codeword.Length - 1) - errorPosition;
+                byte xk = GF256.Helper(locatorExp);
+                byte xkInv = GF256.Inverse(xk);
+                byte num = Polynomial.Evaluate(omega, xkInv);
+                byte denominator = Polynomial.Evaluate(lambdaDerivative, xkInv);
+                byte errorMagn =  GF256.Divide(num,denominator);
+                //This is the error correction, forney's algorithm just returns the error magnitudes
+                codeword[errorPosition] = GF256.Add(codeword[errorPosition], errorMagn); 
+            }
+
+            return codeword;
         }
     }
     
