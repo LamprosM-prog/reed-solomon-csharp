@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Diagnostics;   
+using System.Diagnostics;
+using System.Text;
 using ReedSolomon;
 
 namespace ReedSolomonConsole
@@ -8,32 +9,70 @@ namespace ReedSolomonConsole
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine(" ");
+            Console.WriteLine("Welcome to the Reed-Solomon Encoder, This encoder uses GF(256) table, \n" +
+                "Berlekamp-Massey algorithm, Chien search, and Forney’s algorithm to correct errors in a message");
+            Start();
+        }
+        public static void Start()
+        {
+            int limit = 64;
+            int numberOfErrors = -1;
+
+            while (true)
+            {
+                Console.WriteLine("Enter how many errors would you like? " +
+                    "\nThe theoretical limit is 127, but for complexity reasons the hard limit is 64 " +
+                    "\n(Note: For errors higher than 16 expect high latency)");
+
+                string? input = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(input) || !int.TryParse(input, out numberOfErrors))
+                {
+                    Console.WriteLine("Please enter a valid integer.");
+                    continue; 
+                }
+
+                if (numberOfErrors < 0 || numberOfErrors > limit)
+                {
+                    Console.WriteLine($"Error limit exceeded (must be between 0 and {limit}).");
+                    continue; 
+                }
+
+                break; 
+            }
+
             
-            Console.WriteLine("Enter how many errors would you like? \n The theoretical limit is 127," +
-                "but for complexity reasons the hard limit is 64 \n (Note: For errors higher than 16 expect high latency)");
-            string numberOfErrors = Console.ReadLine();
-            
-            
-            
-            
+            string messageString = "";
+            while (true)
+            {
+                Console.WriteLine($"Enter message of AT LEAST {numberOfErrors} characters \nASCII characters only:");
+                messageString = Console.ReadLine() ?? "";
+                if (messageString.Length < numberOfErrors)
+                {
+                    Console.WriteLine("Message too short.");
+                    continue; 
+                }
+                break; 
+            }
+
+            BeginEncode(messageString, numberOfErrors);
+        }
+        public static void BeginEncode(string messageString, int numberOfErrors)
+        {
+        
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            
-            
-            
-            
-            
-            
-            int t = 4;
-            byte[] messageTest = [1, 2, 3, 4];
-            Console.WriteLine($"Message:{string.Join(" ", messageTest)} // Polynomial form {PolynomialPrinter.PrintPolynomial(messageTest)}");
-            byte[] codeWordTest = Encoder.Encode(messageTest, t);
-            Console.WriteLine($"The codeword is : {string.Join($" ", codeWordTest)} // Polynomial form {PolynomialPrinter.PrintPolynomial(codeWordTest)}");
-            byte[] codeWordCorrupted = (byte[])Noise(codeWordTest);
-            Console.WriteLine($"Noise corrupted codeword: {string.Join(" ", codeWordCorrupted)} // Polynomial form {PolynomialPrinter.PrintPolynomial(codeWordTest)}");
-            byte[] syndromes = Decoder.ComputeSyndromes(codeWordTest, t);
-            bool AreThereErrors = Decoder.CheckForErrors(syndromes);
+            int t = numberOfErrors * 2;
+            byte[] message = Encoding.ASCII.GetBytes(messageString);
+            Console.WriteLine($"Byte form of Message:  {string.Join(" ", message)} " +
+                $"// Polynomial form : M(x) = {PolynomialPrinter.PrintPolynomial(message)}");
+            byte[] codeWord = ReedSolomon.Encoder.Encode(message, t);
+            Console.WriteLine($"The ReedSolomon codeword is : {string.Join($" ", codeWord)} " +
+                $"// Polynomial form C(x) = {PolynomialPrinter.PrintPolynomial(codeWord)}");
+            byte[] corrupted = (byte[])codeWord.Clone();
+            byte[] codeWordCorrupted = (byte[])Noise(corrupted, numberOfErrors);
+            Console.WriteLine($"Noise corrupted codeword: {string.Join(" ", codeWordCorrupted)} // Polynomial form {PolynomialPrinter.PrintPolynomial(codeWord)}");
+            byte[] syndromes = ReedSolomon.Decoder.ComputeSyndromes(codeWordCorrupted, t);
+            bool AreThereErrors = ReedSolomon.Decoder.CheckForErrors(syndromes);
             if (AreThereErrors == false)
             {
                 Console.WriteLine("No errors detected");
@@ -41,27 +80,24 @@ namespace ReedSolomonConsole
             else
             {
                 Console.WriteLine($"Syndromes : {string.Join(" ", syndromes)}");
-                byte[] lambda = Decoder.BerlekampMassey(syndromes);
-                var errorPositions = Decoder.ChienSearch(lambda, codeWordCorrupted.Length);
-                byte[] codeword = Decoder.Forney(lambda, codeWordCorrupted, syndromes, errorPositions);
+                byte[] lambda = ReedSolomon.Decoder.BerlekampMassey(syndromes);
+                var errorPositions = ReedSolomon.Decoder.ChienSearch(lambda, codeWordCorrupted.Length);
+                byte[] codeword = ReedSolomon.Decoder.Forney(lambda, codeWordCorrupted, syndromes, errorPositions);
                 Console.WriteLine($"Corrected codeword is = {string.Join(" ", codeword)}");
+                byte[] codewordMessage = codeword[..message.Length];
+                string originalMessage = Encoding.ASCII.GetString(codewordMessage);
+                Console.WriteLine($"Original message : {originalMessage}");
             }
+            
             stopwatch.Stop();
             TimeSpan ts = stopwatch.Elapsed;
             string elapsedTime = String.Format("{0000}", ts.Milliseconds);
             Console.WriteLine($"Runtime: {elapsedTime} ms");
             Console.ReadKey();
         }
-        public static void Start()
-        {
-
-        }
-       
-        
-        public static byte[] Noise(byte[] codeWord)
+        public static byte[] Noise(byte[] codeWord, int numberOfErrors)
         {
             Random rnd = new Random();
-            int numberOfErrors = 2; //Will be based on user
             for (int i = 0; i < numberOfErrors; i++)
             {
                 int index = rnd.Next(0, codeWord.Length);

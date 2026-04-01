@@ -86,7 +86,7 @@ namespace ReedSolomon
                 lastNonZero--;
             lambda = lambda.Take(lastNonZero + 1).ToArray();
             Array.Reverse(lambda);
-            Console.WriteLine($"Lambda : {string.Join(" ",lambda)} // Lambda Polynomial Form {PolynomialPrinter.PrintPolynomial(lambda)}");
+            Console.WriteLine($"Lambda : {string.Join(" ",lambda)} // Lambda Polynomial Form Λ(χ) = {PolynomialPrinter.PrintPolynomial(lambda)}");
             return lambda; 
         }
         public static List<int> ChienSearch(byte[] lambda, int codewordLength)
