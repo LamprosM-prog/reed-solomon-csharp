@@ -94,7 +94,7 @@ namespace ReedSolomon
            lambda = Polynomial.Trim(lambda);
             Console.WriteLine(string.Join(" ",lambda));
             List<int> errorPositions = new List<int>();
-            for (int i = 0; i < 255; i++)
+            for (int i = 0; i <= 255; i++)
             {
                 byte x = GF256.Helper(i);
                 byte eval = Polynomial.Evaluate(lambda, x);

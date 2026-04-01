@@ -22,7 +22,7 @@ namespace ReedSolomonConsole
             {
                 Console.WriteLine("Enter how many errors would you like? " +
                     "\nThe theoretical limit is 127, but for complexity reasons the hard limit is 64 " +
-                    "\n(Note: For errors higher than 16 expect high latency)");
+                    "\n(Note: For errors higher than 16 expect high latency,\nit is also recommended that an even ammount of errors is selected )");
 
                 string? input = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(input) || !int.TryParse(input, out numberOfErrors))
@@ -74,7 +74,7 @@ namespace ReedSolomonConsole
             byte[] codeWordCorrupted = (byte[])Noise(corrupted, numberOfErrors);
             string codewordCorruptedString = Encoding.UTF8.GetString(codeWordCorrupted);
             Console.WriteLine($"Corrupted codeword string : {codewordCorruptedString}");
-            Console.WriteLine($"Noise corrupted codeword: {string.Join(" ", codeWordCorrupted)} // Polynomial form {PolynomialPrinter.PrintPolynomial(codeWord)}");
+            Console.WriteLine($"Noise corrupted codeword: {string.Join(" ", codeWordCorrupted)} // Polynomial form {PolynomialPrinter.PrintPolynomial(codeWordCorrupted)}");
             byte[] syndromes = ReedSolomon.Decoder.ComputeSyndromes(codeWordCorrupted, t);
             bool AreThereErrors = ReedSolomon.Decoder.CheckForErrors(syndromes);
             if (AreThereErrors == false)
