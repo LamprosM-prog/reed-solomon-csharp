@@ -46,5 +46,6 @@ namespace ReedSolomon
         }
         public static byte Helper(int i) => exp[i];
         public static byte HelperLog(int i) => log[i];
+
     }
 }

@@ -100,6 +100,22 @@ namespace ReedSolomon.Tests
             Assert.Equal(new byte[] { 4 }, result);
             
         }
+        [Fact]
+        public void DerivativeBasic()
+        {
+            byte[] a = [1, 0, 1, 0, 1];
+            byte[] expected = [0];
+            byte[] result = Polynomial.Derivative(a);
+            Assert.Equal(expected, result); 
+        }
+        [Fact]
+        public void DerivativeComplex()
+        {
+            byte[] a = [1, 2, 3, 4];
+            byte[] expected = [1, 0, 3];
+            byte[] result = Polynomial.Derivative(a);
+            Assert.Equal(expected, result);
+        }
     
     }
 }
